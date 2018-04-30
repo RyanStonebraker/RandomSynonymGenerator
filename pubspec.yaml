@@ -1,0 +1,4 @@
+name: RandomSynonymGenerator
+description: A random synonym generator built to test out Dart functionality.
+dependencies:
+  http: "^0.11.3+16"
