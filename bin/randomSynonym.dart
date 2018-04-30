@@ -71,7 +71,6 @@ getRandomSynonym() async {
   var apiKey = "1166c33a777038684549d7422cc054fc";
 
   var fullUrl = "$thesaurusBaseURL/$apiKey/$userWord/";
-  print (fullUrl);
 
   await http.read(fullUrl).then(printRandomSyn).catchError(pageLoadError);
 }
