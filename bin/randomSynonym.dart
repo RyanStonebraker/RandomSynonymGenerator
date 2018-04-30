@@ -10,24 +10,25 @@ import 'package:http/http.dart' as http;
 
 // Splits a raw string by newlines and then removes up to the end of a marker
 // in each string.
-List getScrubbedList(String rawString, String marker) {
+List getScrubbedList(String rawString, List markers) {
+  var scrubbedList = [];
   var delimitedList = rawString.split("\n");
   for (var i = 0; i < delimitedList.length; ++i) {
-    if (delimitedList[i].length > marker.length) {
-      int delimiterEnd = delimitedList[i].indexOf(marker) + marker.length;
-      delimitedList[i] = delimitedList[i].substring(delimiterEnd);
-    }
-    else {
-      delimitedList.removeAt(i);
+    for (var marker in markers) {
+      if (delimitedList[i].length > marker.length && delimitedList[i].contains(marker)) {
+        int delimiterEnd = delimitedList[i].indexOf(marker) + marker.length;
+        scrubbedList.add(delimitedList[i].substring(delimiterEnd));
+        break;
+      }
     }
   }
-  return delimitedList;
+  return scrubbedList;
 }
 
 
 // Prints a random synonym from the bighugelabs thesaurus response page.
 void printRandomSyn(dynamic syns) {
-  syns = getScrubbedList(syns, "syn|");
+  syns = getScrubbedList(syns, ["syn|", "sim|"]);
   var randGen = new Random();
   var randomSyn = syns[randGen.nextInt(syns.length)];
   print ("Random Synonym: " + randomSyn);
@@ -70,6 +71,7 @@ getRandomSynonym() async {
   var apiKey = "1166c33a777038684549d7422cc054fc";
 
   var fullUrl = "$thesaurusBaseURL/$apiKey/$userWord/";
+  print (fullUrl);
 
   await http.read(fullUrl).then(printRandomSyn).catchError(pageLoadError);
 }
