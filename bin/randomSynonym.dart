@@ -7,17 +7,22 @@ import "dart:io";
 import 'dart:math';
 import 'package:http/http.dart' as http;
 
-void printRandomSyn(dynamic syns) {
-  var delimiter = "syn|";
-  syns = syns.split("\n");
-  for (var i = 0; i < syns.length; ++i) {
-    if (syns[i].length > delimiter.length) {
-      syns[i] = syns[i].substring(syns[i].indexOf(delimiter) + delimiter.length);
+List getDelimitedList(String rawString, String delimiter) {
+  var delimitedList = rawString.split("\n");
+  for (var i = 0; i < delimitedList.length; ++i) {
+    if (delimitedList[i].length > delimiter.length) {
+      int delimiterEnd = delimitedList[i].indexOf(delimiter) + delimiter.length;
+      delimitedList[i] = delimitedList[i].substring(delimiterEnd);
     }
     else {
-      syns.removeAt(i);
+      delimitedList.removeAt(i);
     }
   }
+  return delimitedList;
+}
+
+void printRandomSyn(dynamic syns) {
+  syns = getDelimitedList(syns, "syn|");
   var randGen = new Random();
   var randomSyn = syns[randGen.nextInt(syns.length)];
   print ("Random Synonym: " + randomSyn);
@@ -30,7 +35,7 @@ void pageLoadError(error) {
   main();
 }
 
-String getSanitizedInput () {
+String getSanitizedInput() {
   stdout.write ("Please Enter A Word: ");
   var userWord = stdin.readLineSync();
   userWord = userWord.toLowerCase();
@@ -50,7 +55,7 @@ void main() {
   var userWord = getSanitizedInput();
   var thesaurusBaseURL = "http://words.bighugelabs.com/api/2";
   var apiKey = "1166c33a777038684549d7422cc054fc";
-  
+
   var fullUrl = "${thesaurusBaseURL}/${apiKey}/${userWord}/";
 
   http.read(fullUrl).then(printRandomSyn).catchError(pageLoadError);
